@@ -19,31 +19,26 @@ function App() {
   }, []);
 
   const convertToGif = async () => {
-    try {
-      //write file to wasm memory system
-      ffmpeg.FS('writefile', 'test.mp4', await fetchFile(video));
-      // run ffmpeg convert command
-      await ffmpeg.run(
-        '-i',
-        'test.mp4',
-        '-t',
-        '2.5',
-        '-ss',
-        '2.0',
-        '-f',
-        'gif',
-        'out.gif',
-      );
-      //read file
-      const data = ffmpeg.FS('readFile', 'out.gif');
-      //create url of out.gif readable by browser
-      const url = URL.createObjectURL(new Blob(data.buffer), {
-        type: 'image.gif',
-      });
-      setGif(url);
-    } catch (error) {
-      console.error(error);
-    }
+    //write file to wasm memory system
+    ffmpeg.FS('writeFile', 'test.mp4', await fetchFile(video));
+    // run ffmpeg convert command
+    await ffmpeg.run(
+      '-i',
+      'test.mp4',
+      '-t',
+      '2.5',
+
+      '-f',
+      'gif',
+      'out.gif',
+    );
+    //read file
+    const data = ffmpeg.FS('readFile', 'out.gif');
+    //create url of out.gif readable by browser
+    const url = URL.createObjectURL(new Blob([data.buffer]), {
+      type: 'image.gif',
+    });
+    setGif(url);
   };
 
   return ready ? (
@@ -58,7 +53,7 @@ function App() {
       ></input>
       <h3>Result</h3>
       <button onClick={() => convertToGif()}>Convert</button>
-      {gif && <img src={gif} />}
+      {gif && <img src={gif} width="250" />}
     </div>
   ) : (
     <p>Loading...</p>
